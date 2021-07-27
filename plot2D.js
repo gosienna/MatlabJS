@@ -14,8 +14,8 @@ let id_canvas="canvas1"
 //---------setup scene & camera-----------
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x0000000 );
-
-const camera = new THREE.OrthographicCamera(-100, 100, 100, -100, -1000, 1000)
+const aspectRatio=window.innerWidth/window.innerHeight
+const camera = new THREE.OrthographicCamera(-100*aspectRatio, 100*aspectRatio, 100, -100, -1000, 1000)
 
 //camera.position.z = 10
 
@@ -39,28 +39,17 @@ const gridHelper = new THREE.GridHelper( size, divisions , colorCenterLine, colo
 gridHelper.rotation.x = Math.PI/2;
 scene.add( gridHelper );
 
-/* //add cube
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial(
-    {color: 0x00ff00,
-    wireframe: true}
-);
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube ); */
-//add point
 function createPoints() {
-    let vertices=new Float32Array( [
-        -1.0, -1.0,  
-        1.0, -1.0,  
-        1.0,  1.0,  
-        -1.0, 1.0,  
-        3.0,  0.0,  
-    ] );
+    let vertices=[]
+    data.forEach(function(point){   
+        vertices.push(point.x,)
+        vertices.push(point.y)
+    })
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 2 ) );
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(vertices), 2 ) );
     var texture=new THREE.TextureLoader().load("circle.png");
     const material = new THREE.PointsMaterial( { color: 0xffffff,
-                                                 size:5,
+                                                 size:10,
                                                  transparent: true,
                                                  blending: THREE.AdditiveBlending,
                                                  map: texture,} );
