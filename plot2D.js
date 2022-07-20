@@ -6,7 +6,6 @@ class Plot2D{
     init(data,canvasID) {
         this.canvasID = canvasID
         this.data = data
-        //console.log(data)
         //----------------------setup camera----------------------
         
         //set default data display range is all the data set
