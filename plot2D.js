@@ -8,7 +8,7 @@ class Plot2D{
     constructor(canvasID){
         //---------initialize data as empty array----------------
         this.data = []
-        //---------setup scene & camera-----------
+        //---------setup scene & camera & renderer-----------
         const scene = new THREE.Scene();
         scene.background = new THREE.Color( 0x0000000 );
         //use aspecRatio to transform the ratio back to 1:1
@@ -27,8 +27,7 @@ class Plot2D{
         const orbit = new OrbitControls( camera, renderer.domElement );
         //let the object can be zoom in and out
         orbit.enableZoom = true;
-
-
+        
         //---------add content into scene---------
         //add grid
         const size = 100;
@@ -39,17 +38,16 @@ class Plot2D{
         //the default is grid over xz plain, rotate along x axis to turn grid into xy plain
         gridHelper.rotation.x = Math.PI/2;
         scene.add( gridHelper );
-        this.scene=scene
-
-        //------------------------render view-----------------
-        function render() {
         
-            requestAnimationFrame( render );
-            renderer.render( scene, camera);
-
-        }
-        render();
+        //--------------------make three.js object assesble------------
+        this.renderer = renderer
+        this.camera = camera
+        this.scene = scene
+        this.orbit = orbit
+        //------------------------render view-----------------
+        renderer.render( scene , camera )
     }
+    
     scatter(data) {
         this.data.push(data) //store the data
         let vertices=[]
@@ -68,21 +66,35 @@ class Plot2D{
             
         var cloud = new THREE.Points(geometry, material);
         this.scene.add(cloud);
-
+        this.renderer.render( this.scene , this.camera )
         
     }
-    line(data) {
+    line(data,line_ID) {
         this.data.push(data) // store data
         const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
         const points = []
         //push vertice position into the points
         data.forEach(function(point){
-            console.log(point.x,point.y)   
-            points.push(new THREE.Vector3(point.x,point.y,0))
+            points.push(new THREE.Vector3(point.x,point.y,0.0))
         })
         const geometry = new THREE.BufferGeometry().setFromPoints( points );
         const line = new THREE.Line( geometry, material );
-        this.scene.add( line )
+        this.line = line
+        this.scene.add( this.line )
+        this.renderer.render( this.scene , this.camera )      
     }
-
+    animate(){
+       
+        let renderer = this.renderer
+        let camera = this.camera 
+        let scene = this.scene
+        let line = this.line
+        update();
+        function update(){
+            requestAnimationFrame( update );
+            line.rotation.z -=0.01
+            renderer.render( scene, camera );
+        }
+    }
+    
 }
